@@ -5,10 +5,14 @@ TICPE is a cancer-specific qualitative method based on the relative expression o
 To install the TICPE, install from github using devtools
 
 library(devtools)
+
 install_github("huitingxiao/TICPE")
+
 Or you can download the .ZIP file and unzip it.
 
+
 install.packages("TICPE",repos = NULL,type="source")
+
 #The "TICPE" should be combined with the absolute path.
 
 # Usage
@@ -19,6 +23,7 @@ parameter=Stimulatedmodel(combat_edata,select_siggene,stablepairs)
 estimated_proportion=TICPEScores(expr,select_siggene,stablepairs,parameter,0.5)
 
 This function performs all three steps in TICPE, which can be performed seperately as well:
+
 1.SelectSiggene
 2.Stimulatedmodel
 3.TICPEScores
