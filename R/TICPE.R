@@ -27,6 +27,7 @@ TICPEScores<-function(expr,select_siggene,stablepairs,parameter,alpha = 0.5){
     gid<-as.numeric(select_siggene[[i]])
     Nnorm<-expr[which(rownames(expr)%in%gid),]
     Lgene<-length(gid)
+    reverse<-matrix(0,ncol(expr),4)
     up_pairs<-stable_pairs[which(stable_pairs[,1]%in%gid),]
     up_exp<-expr[match(up_pairs[,1],rownames(expr)),,drop=F]-expr[match(up_pairs[,2],rownames(expr)),,drop=F]
     up1<-colSums(up_exp>0,na.rm=TRUE)
