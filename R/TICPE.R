@@ -41,7 +41,7 @@ TICPEScores<-function(expr,select_siggene,stablepairs,parameter,alpha = 0.5){
     reverse[,3]<-nrow(up_pairs)
     reverse[,4]<-nrow(down_pairs)
     up_scores<-apply(reverse,1,function(x) fisher.test(matrix(x,ncol=2,byrow=T))$estimate)
-    estimated_prop[i,]<-((up_scores-min(up_scores))/(as.numeric(parameter[i,2])+alpha))^as.numeric(parameter[i,3])
+    estimated_prop[i,]<-(up_scores/(as.numeric(parameter[i,2])+alpha))^as.numeric(parameter[i,3])
   }
   return(estimated_prop)
 }
