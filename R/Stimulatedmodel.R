@@ -12,7 +12,7 @@
 #'
 #' @examples
 #'
-Stimulatedmodel<-function(combat_edata,select_siggene,stable_pairs){
+Stimulatedmodel<-function(combat_edata,select_siggene,stablepairs){
   parameter<-matrix(,length(select_siggene),3)
   name<-factor(colnames(combat_edata))
   combat_exp<-NULL
@@ -36,11 +36,11 @@ Stimulatedmodel<-function(combat_edata,select_siggene,stable_pairs){
     rownames(mixture)=rownames(combat_edata)
     gid<-as.numeric(select_siggene[[j]])
     Lgene<-length(which(!gid==''))
-    up_pairs<-stable_pairs[which(stable_pairs[,1]%in%gid),]
+    up_pairs<-stablepairs[which(stablepairs[,1]%in%gid),]
     up_exp<-mixture[match(up_pairs[,1],rownames(mixture)),,drop=F]-mixture[match(up_pairs[,2],rownames(mixture)),,drop=F]
     mix_up1<-colSums(up_exp>0,na.rm=TRUE)
     mix_down1<-colSums(up_exp<0,na.rm=TRUE)
-    down_pairs<-stable_pairs[which(stable_pairs[,2]%in%gid),]
+    down_pairs<-stablepairs[which(stablepairs[,2]%in%gid),]
     down_exp<-mixture[match(down_pairs[,2],rownames(mixture)),,drop=F]-mixture[match(down_pairs[,1],rownames(mixture)),,drop=F]
     mix_up2<-colSums(down_exp>0,na.rm=TRUE)
     mix_down2<-colSums(down_exp<0,na.rm=TRUE)
