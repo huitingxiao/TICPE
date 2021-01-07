@@ -12,15 +12,15 @@
 #' @examples
 #'
 TICPEScores<-function(expr,select_siggene,stablepairs,parameter,alpha = 0.5){
-  pair_gid<-unique(c(stable_pairs[,1],stable_pairs[,2]))
+  pair_gid<-unique(c(stablepairs[,1],stablepairs[,2]))
   congid<-intersect(rownames(expr),pair_gid)
-  loc<-union(which(stable_pairs[,1]%in%setdiff(pair_gid,congid)),which(stable_pairs[,2]%in%setdiff(pair_gid,congid)))
+  loc<-union(which(stablepairs[,1]%in%setdiff(pair_gid,congid)),which(stablepairs[,2]%in%setdiff(pair_gid,congid)))
   if (length(loc)==0) {
-    stable_pairs1<-stable_pairs
+    stablepairs1<-stablepairs
   } else {
-    stable_pairs1<-stable_pairs[-loc,]
+    stablepairs1<-stablepairs[-loc,]
   }
-  
+
   estimated_prop<-matrix(,length(select_siggene),ncol(expr))
   rownames(estimated_prop)<-names(select_siggene)
   for(i in 1:length(select_siggene)){
@@ -28,11 +28,11 @@ TICPEScores<-function(expr,select_siggene,stablepairs,parameter,alpha = 0.5){
     Nnorm<-expr[which(rownames(expr)%in%gid),]
     Lgene<-length(gid)
     reverse<-matrix(0,ncol(expr),4)
-    up_pairs<-stable_pairs[which(stable_pairs[,1]%in%gid),]
+    up_pairs<-stablepairs[which(stablepairs[,1]%in%gid),]
     up_exp<-expr[match(up_pairs[,1],rownames(expr)),,drop=F]-expr[match(up_pairs[,2],rownames(expr)),,drop=F]
     up1<-colSums(up_exp>0,na.rm=TRUE)
     down1<-colSums(up_exp<0,na.rm=TRUE)
-    down_pairs<-stable_pairs[which(stable_pairs[,2]%in%gid),]
+    down_pairs<-stablepairs[which(stablepairs[,2]%in%gid),]
     down_exp<-expr[match(down_pairs[,2],rownames(expr)),,drop=F]-expr[match(down_pairs[,1],rownames(expr)),,drop=F]
     up2<-colSums(down_exp>0,na.rm=TRUE)
     down2<-colSums(down_exp<0,na.rm=TRUE)
