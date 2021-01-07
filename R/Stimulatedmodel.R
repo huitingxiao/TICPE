@@ -13,7 +13,6 @@
 #' @examples
 #'
 Stimulatedmodel<-function(combat_edata,select_siggene,stable_pairs){
- prop<-seq(0.008,0.256, by = 0.008)
   parameter<-matrix(,length(select_siggene),3)
   name<-factor(colnames(combat_edata))
   combat_exp<-NULL
