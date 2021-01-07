@@ -12,8 +12,8 @@
 #'
 #' @examples
 #'
-Stimulatedmodel<-function(combat_edata,select_siggene,stablepairs){
-  prop<-seq(0.008,0.256, by = 0.008)
+Stimulatedmodel<-function(combat_edata,select_siggene,stable_pairs){
+ prop<-seq(0.008,0.256, by = 0.008)
   parameter<-matrix(,length(select_siggene),3)
   name<-factor(colnames(combat_edata))
   combat_exp<-NULL
@@ -31,35 +31,28 @@ Stimulatedmodel<-function(combat_edata,select_siggene,stablepairs){
     return(dat)
   }
   for(j in 1:length(select_siggene)){
+    reverse<-matrix(0,32,4)
+    up_scores<-NULL
     mixture<-mix(combat_exp[,which(colnames(combat_exp)%in%names(select_siggene)[j])],norm_control,control)
     rownames(mixture)=rownames(combat_edata)
     gid<-as.numeric(select_siggene[[j]])
     Lgene<-length(which(!gid==''))
-    C_dat<-matrix(0,Lgene,2)
-    N_up<-matrix(0,Lgene,32)
-    N_down<-matrix(0,Lgene,32)
-    sig_exp<-mixture[match(gid[which(!gid=='')],rownames(mixture)),]
-    reverse<-matrix(0,32,4)
-    up_scores<-NULL
-    for (k in 1:Lgene){
-      C_up<-stablepairs[which(stablepairs[,1]%in%gid[k]),2]
-      C_down<-stablepairs[which(stablepairs[,2]%in%gid[k]),1]
-      pairs<-c(C_up,C_down)
-      C_dat[k,1]<-length(C_up)
-      C_dat[k,2]<-length(C_down)
-      N_tmp<-matrix(rep(sig_exp[k,],length(pairs)),ncol=dim(sig_exp)[2],byrow=T)-mixture[match(pairs,rownames(mixture)),]
-      N_up[k,]<-colSums(N_tmp>0,na.rm=TRUE)
-      N_down[k,]<-colSums(N_tmp<0,na.rm=TRUE)
-    }
-    reverse[,1]<-apply(N_up,2,sum)
-    reverse[,2]<-apply(N_down,2,sum)
-    reverse[,3]<-rep(sum(C_dat[,1]),ncol(sig_exp))
-    reverse[,4]<-rep(sum(C_dat[,2]),ncol(sig_exp))
+    up_pairs<-stable_pairs[which(stable_pairs[,1]%in%gid),]
+    up_exp<-mixture[match(up_pairs[,1],rownames(mixture)),,drop=F]-mixture[match(up_pairs[,2],rownames(mixture)),,drop=F]
+    mix_up1<-colSums(up_exp>0,na.rm=TRUE)
+    mix_down1<-colSums(up_exp<0,na.rm=TRUE)
+    down_pairs<-stable_pairs[which(stable_pairs[,2]%in%gid),]
+    down_exp<-mixture[match(down_pairs[,2],rownames(mixture)),,drop=F]-mixture[match(down_pairs[,1],rownames(mixture)),,drop=F]
+    mix_up2<-colSums(down_exp>0,na.rm=TRUE)
+    mix_down2<-colSums(down_exp<0,na.rm=TRUE)
+    reverse[,1]<-mix_up1+mix_up2
+    reverse[,2]<-mix_down1+mix_down2
+    reverse[,3]<-nrow(up_pairs)
+    reverse[,4]<-nrow(down_pairs)
     temp<-apply(reverse,1,function(x) fisher.test(matrix(x,ncol=2,byrow=T))$estimate)
     up_scores<-cbind(up_scores,temp)
-    x <-prop
     y <- (up_scores-min(up_scores))
-    data<-data.frame(x=x,y=y)
+    data<-data.frame(x=seq(0.008,0.256, by = 0.008),y=y)
     k<-nls(y ~a*x^b,data,start=list(a=1, b=1))
     parameter[j,]<-c(names(select_siggene)[j],coef(k))
   }
