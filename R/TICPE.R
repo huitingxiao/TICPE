@@ -20,31 +20,25 @@ TICPEScores<-function(expr,select_siggene,stablepairs,parameter,alpha = 0.5){
   } else {
     stable_pairs1<-stable_pairs[-loc,]
   }
-
+  
   estimated_prop<-matrix(,length(select_siggene),ncol(expr))
   rownames(estimated_prop)<-names(select_siggene)
   for(i in 1:length(select_siggene)){
     gid<-as.numeric(select_siggene[[i]])
     Nnorm<-expr[which(rownames(expr)%in%gid),]
     Lgene<-length(gid)
-    C_dat<-matrix(0,Lgene,2)
-    N_up<-matrix(0,Lgene,ncol(expr))
-    N_down<-matrix(0,Lgene,ncol(expr))
-    reverse<-matrix(0,ncol(expr),4)
-    for (k in 1:Lgene){
-      C_up<-stable_pairs1[which(stable_pairs1[,1]%in%gid[k]),2]
-      C_down<-stable_pairs1[which(stable_pairs1[,2]%in%gid[k]),1]
-      pairs<-c(C_up,C_down)
-      C_dat[k,1]=length(C_up)
-      C_dat[k,2]=length(C_down)
-      N_tmp<-matrix(rep(Nnorm[k,],length(pairs)),ncol=dim(Nnorm)[2],byrow=T)-expr[match(pairs,rownames(expr)),]##
-      N_up[k,]<-colSums(N_tmp>=0)
-      N_down[k,]<-colSums(N_tmp<0)
-    }
-    reverse[,1]<-apply(N_up,2,sum)
-    reverse[,2]<-apply(N_down,2,sum)
-    reverse[,3]<-rep(sum(C_dat[,1]),ncol(expr))
-    reverse[,4]<-rep(sum(C_dat[,2]),ncol(expr))
+    up_pairs<-stable_pairs[which(stable_pairs[,1]%in%gid),]
+    up_exp<-expr[match(up_pairs[,1],rownames(expr)),,drop=F]-expr[match(up_pairs[,2],rownames(expr)),,drop=F]
+    up1<-colSums(up_exp>0,na.rm=TRUE)
+    down1<-colSums(up_exp<0,na.rm=TRUE)
+    down_pairs<-stable_pairs[which(stable_pairs[,2]%in%gid),]
+    down_exp<-expr[match(down_pairs[,2],rownames(expr)),,drop=F]-expr[match(down_pairs[,1],rownames(expr)),,drop=F]
+    up2<-colSums(down_exp>0,na.rm=TRUE)
+    down2<-colSums(down_exp<0,na.rm=TRUE)
+    reverse[,1]<-up1+up2
+    reverse[,2]<-down1+down2
+    reverse[,3]<-nrow(up_pairs)
+    reverse[,4]<-nrow(down_pairs)
     up_scores<-apply(reverse,1,function(x) fisher.test(matrix(x,ncol=2,byrow=T))$estimate)
     estimated_prop[i,]<-((up_scores-min(up_scores))/(as.numeric(parameter[i,2])+alpha))^as.numeric(parameter[i,3])
   }
