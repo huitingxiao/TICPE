@@ -23,7 +23,8 @@ TICPEScores<-function(expr,select_siggene,stablepairs,parameter,alpha = 0.5){
 
   estimated_prop<-matrix(,length(select_siggene),ncol(expr))
   rownames(estimated_prop)<-names(select_siggene)
-  for(i in 1:length(select_siggene)){
+  n=length(select_siggene)
+  for(i in 1:n){
     gid<-as.numeric(select_siggene[[i]])
     Nnorm<-expr[which(rownames(expr)%in%gid),]
     Lgene<-length(gid)
@@ -41,7 +42,7 @@ TICPEScores<-function(expr,select_siggene,stablepairs,parameter,alpha = 0.5){
     reverse[,3]<-nrow(up_pairs)
     reverse[,4]<-nrow(down_pairs)
     up_scores<-apply(reverse,1,function(x) fisher.test(matrix(x,ncol=2,byrow=T))$estimate)
-    estimated_prop[i,]<-(up_scores/(as.numeric(parameter[i,2])+alpha))^as.numeric(parameter[i,3])
+    estimated_prop[i,]<-(up_scores/(n*as.numeric(parameter[i,2])+alpha))^as.numeric(parameter[i,3])
   }
   return(estimated_prop)
 }
