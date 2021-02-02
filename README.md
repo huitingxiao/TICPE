@@ -39,7 +39,7 @@ This function performs all three steps in TICPE, which can be performed seperate
 ```
 library(TICPE)
 data(example)
-estimated_proportion=TICPEScores(GSE39582_IHC_exp,CRC_select_siggene,select_spairs,parameter,0.5)
+estimated_proportion=TICPEScores(GSE39582_IHC_exp,CRC_select_siggene,CRC_stable_pairs,parameter,0.5)
 ```
 The gene expression data are from the database Gene Expression Omnibus (GEO), **CRC_select_siggene**,**select_spairs** and **parameter** are calculated for colorectal cancer.  
 The **GSE39582_IHC_exp** is the colorectal cancer samples who had immunohistochemistry data of CD3, CD8, and CD68.
